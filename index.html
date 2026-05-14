@@ -2,846 +2,539 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>ЕГОР-КЛИКЕР: Симулятор Днища</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ЕГОР-КЛИКЕР</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Epilogue:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-6px)}20%,40%,60%,80%{transform:translateX(6px)}}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-100px) scale(0.5)}}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
-@keyframes slideIn{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
-@keyframes slideOut{0%{transform:translateY(0);opacity:1}100%{transform:translateY(100%);opacity:0}}
-@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-@keyframes glitch{0%{clip-path:inset(0 0 0 0)}5%{clip-path:inset(20% 0 60% 0)}10%{clip-path:inset(0 0 0 0)}15%{clip-path:inset(50% 0 10% 0)}20%{clip-path:inset(0 0 0 0)}}
-@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
-@keyframes neon{0%,100%{text-shadow:0 0 7px #fff,0 0 10px #fff,0 0 21px #fff,0 0 42px #0fa,0 0 82px #0fa,0 0 92px #0fa,0 0 102px #0fa,0 0 151px #0fa}50%{text-shadow:0 0 4px #fff,0 0 7px #fff,0 0 18px #fff,0 0 38px #f0f,0 0 73px #f0f,0 0 80px #f0f,0 0 94px #f0f,0 0 140px #f0f}}
-@keyframes bgScroll{0%{background-position:0 0}100%{background-position:100% 100%}}
-
 :root{
---bg:#0a0a1a;
---card:#1a1a3e;
---card2:#2a1a4e;
---accent:#ff6b35;
---accent2:#ffd700;
---accent3:#00ff88;
---text:#fff;
---text2:#aaa;
---danger:#ff3355;
---success:#00ff88;
---font:'Segoe UI',system-ui,-apple-system,sans-serif;
+--pink:#EC4899;--amber:#F59E0B;--cyan:#06B6D4;--bg:#080810;--surface:rgba(255,255,255,0.04);
+--text:#fff;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.3);--danger:#ff3355;--success:#00ff88;
+--font:'Epilogue',system-ui,-apple-system,sans-serif;--font-title:'Anton','Epilogue',sans-serif;
 }
+@keyframes bgMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes float{0%,100%{transform:translateY(0) translateX(0)}33%{transform:translateY(-20px) translateX(10px)}66%{transform:translateY(-10px) translateX(-10px)}}
+@keyframes pulseGlow{0%,100%{box-shadow:0 0 30px rgba(236,72,153,0.3),0 0 60px rgba(245,158,11,0.15)}50%{box-shadow:0 0 40px rgba(236,72,153,0.5),0 0 80px rgba(6,182,212,0.2)}}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@keyframes slideUp{0%{opacity:0;transform:translateY(30px) scale(0.96)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-5px)}20%,40%,60%,80%{transform:translateX(5px)}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(0.4)}}
+@keyframes ripple{0%{transform:scale(0);opacity:0.6}100%{transform:scale(3);opacity:0}}
+@keyframes countPop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes modalIn{0%{opacity:0;transform:scale(0.9) translateY(20px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes borderGlow{0%,100%{border-color:var(--pink);box-shadow:0 0 20px rgba(236,72,153,0.3),inset 0 0 20px rgba(236,72,153,0.05)}33%{border-color:var(--amber);box-shadow:0 0 20px rgba(245,158,11,0.3),inset 0 0 20px rgba(245,158,11,0.05)}66%{border-color:var(--cyan);box-shadow:0 0 20px rgba(6,182,212,0.3),inset 0 0 20px rgba(6,182,212,0.05)}}
+
 body{
-font-family:var(--font);
-background:var(--bg);
-color:var(--text);
-min-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-overflow-x:hidden;
-background-image:radial-gradient(ellipse at 20% 50%,#1a0a3e 0%,transparent 50%),radial-gradient(ellipse at 80% 50%,#0a1a3e 0%,transparent 50%);
+font-family:var(--font);background:var(--bg);color:var(--text);
+min-height:100vh;min-height:100dvh;display:flex;justify-content:center;align-items:center;
+overflow:hidden;position:relative;
 }
-#app{
-width:100%;
-max-width:420px;
-padding:12px;
-position:relative;
+.bg-glow{
+position:fixed;top:-50%;left:-50%;width:200%;height:200%;
+background:radial-gradient(ellipse at 30% 20%,rgba(236,72,153,0.08) 0%,transparent 50%),
+radial-gradient(ellipse at 70% 80%,rgba(6,182,212,0.06) 0%,transparent 50%),
+radial-gradient(ellipse at 50% 50%,rgba(245,158,11,0.04) 0%,transparent 50%);
+animation:bgMove 20s ease-in-out infinite;pointer-events:none;z-index:0;
 }
-.header{
-text-align:center;
-padding:10px 0 6px;
-position:relative;
+.bg-particles{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0;overflow:hidden}
+.bg-dot{
+position:absolute;width:3px;height:3px;background:var(--text3);border-radius:50%;
+animation:float 8s ease-in-out infinite;opacity:0.3;
 }
+.bg-dot:nth-child(1){top:15%;left:10%;animation-delay:0s;animation-duration:7s}
+.bg-dot:nth-child(2){top:30%;right:20%;animation-delay:1s;animation-duration:9s}
+.bg-dot:nth-child(3){top:60%;left:5%;animation-delay:2s;animation-duration:8s}
+.bg-dot:nth-child(4){top:80%;right:15%;animation-delay:0.5s;animation-duration:10s}
+.bg-dot:nth-child(5){top:45%;left:80%;animation-delay:3s;animation-duration:7.5s}
+.bg-dot:nth-child(6){top:10%;right:40%;animation-delay:1.5s;animation-duration:8.5s}
+
+#app{width:100%;max-width:400px;padding:16px;position:relative;z-index:1;animation:slideUp 0.6s ease-out}
+
+/* HEADER */
+.header{text-align:center;margin-bottom:16px}
 .header h1{
-font-size:22px;
-font-weight:900;
-background:linear-gradient(90deg,#ff6b35,#ffd700,#ff6b35);
-background-size:200% auto;
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
-animation:rainbow 3s linear infinite;
-letter-spacing:1px;
+font-family:var(--font-title);font-size:28px;letter-spacing:2px;line-height:1;
+background:linear-gradient(135deg,var(--pink),var(--amber),var(--cyan),var(--pink));
+background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;animation:bgMove 4s linear infinite;
 }
-.header .day{
-font-size:13px;
-color:var(--text2);
-margin-top:2px;
-}
-.header .day span{color:var(--accent2);font-weight:700}
+.header .sub{font-size:12px;color:var(--text2);margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+.header .sub span{color:var(--amber);font-weight:700}
 
-/* EGOR FACE */
-.egor-container{
-position:relative;
-margin:8px auto;
-width:200px;
-height:200px;
-cursor:pointer;
-touch-action:manipulation;
+/* EGOR PHOTO */
+.photo-section{display:flex;flex-direction:column;align-items:center;margin-bottom:16px}
+.egor-wrap{
+position:relative;width:180px;height:180px;border-radius:50%;cursor:pointer;
+animation:pulseGlow 3s ease-in-out infinite;touch-action:manipulation;
 }
-.egor-face{
-width:100%;
-height:100%;
-border-radius:50%;
-background:radial-gradient(circle at 35% 35%,#f5d0a9,#d4a574 50%,#b8845a);
-position:relative;
-transition:transform 0.1s;
-box-shadow:0 0 40px rgba(255,107,53,0.3),inset 0 -20px 40px rgba(0,0,0,0.2);
-overflow:hidden;
+.egor-wrap:active{animation:none;transform:scale(0.94);transition:transform 0.1s}
+.egor-border{
+position:absolute;inset:-3px;border-radius:50%;border:2px solid var(--pink);
+animation:borderGlow 4s linear infinite;pointer-events:none;
 }
-.egor-face:active{transform:scale(0.92)}
-.egor-face.clicked{animation:pulse 0.15s ease}
-.egor-face img{
-width:100%;height:100%;object-fit:cover;display:block;
+.egor-img{
+width:100%;height:100%;border-radius:50%;object-fit:cover;display:block;
+position:relative;z-index:1;
 }
-.egor-face .placeholder{
-width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;
+.click-hint{
+font-size:11px;color:var(--text3);margin-top:8px;letter-spacing:2px;text-transform:uppercase;
+transition:all 0.3s;animation:pulseGlow 2s ease-in-out infinite;
+}
+.egor-wrap:hover+.click-hint{color:var(--pink)}
+
+/* RIPPLES */
+.ripple-container{position:absolute;inset:0;border-radius:50%;overflow:hidden;pointer-events:none;z-index:2}
+.ripple-el{
+position:absolute;width:20px;height:20px;border:2px solid var(--pink);border-radius:50%;
+animation:ripple 0.6s ease-out forwards;
 }
 
-/* Eyes */
-.eyes{
-position:absolute;top:28%;left:0;width:100%;height:30%;display:flex;justify-content:space-around;padding:0 30px;
-}
-.eye{
-width:28px;height:32px;background:#fff;border-radius:50%;position:relative;transition:all 0.2s;
-}
-.eye::after{
-content:'';position:absolute;width:14px;height:18px;background:#333;border-radius:50%;top:6px;left:7px;transition:all 0.2s;
-}
-.egor-face.happy .eye::after{top:2px;height:22px}
-.egor-face.angry .eye::after{top:10px;height:10px;background:#cc0000}
-.egor-face.stupid .eye{transform:rotate(10deg)}
-.egor-face.stupid .eye:last-child{transform:rotate(-10deg)}
-.egor-face.stupid .eye::after{width:10px;height:10px;top:12px;left:9px}
+/* PARTICLES */
+.particle-box{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.particle-el{position:absolute;font-size:18px;pointer-events:none;animation:floatUp 1s ease-out forwards}
 
-.mouth{
-position:absolute;bottom:22%;left:50%;transform:translateX(-50%);
-width:50px;height:16px;border-bottom:4px solid #a06040;border-radius:0 0 25px 25px;transition:all 0.3s;
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{
+background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border-radius:16px;padding:12px 8px;text-align:center;
+border:1px solid rgba(255,255,255,0.06);transition:all 0.3s;
 }
-.egor-face.happy .mouth{width:60px;height:24px;border-bottom-width:5px}
-.egor-face.angry .mouth{width:40px;height:8px;border-bottom:none;border-top:4px solid #a06040;border-radius:25px 25px 0 0}
-.egor-face.stupid .mouth{width:40px;height:20px;border-bottom:4px solid #a06040;border-radius:50%}
+.stat-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-1px)}
+.stat-icon{font-size:18px;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:800;line-height:1;margin-bottom:2px;transition:all 0.2s}
+.stat-value.pink{color:var(--pink)}.stat-value.green{color:var(--success)}.stat-value.amber{color:var(--amber)}
+.stat-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px}
+.stat-sub{font-size:9px;color:var(--text3);margin-top:2px}
 
-/* Floating particles */
-.particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
-.particle{
-position:absolute;font-size:20px;pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;
+/* BARS */
+.bars-group{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-icon{font-size:12px;width:20px;text-align:center;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative}
+.bar-fill.pink{background:linear-gradient(90deg,var(--pink),#ff6ba6)}
+.bar-fill.cyan{background:linear-gradient(90deg,var(--cyan),#3ce0ff)}
+.bar-fill.amber{background:linear-gradient(90deg,var(--amber),#ffc83d)}
+
+/* ACTIONS */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.btn-action{
+padding:14px;border:none;border-radius:14px;font-size:14px;font-weight:700;font-family:var(--font);
+cursor:pointer;transition:all 0.25s cubic-bezier(0.34,1.56,0.64,1);touch-action:manipulation;
+position:relative;overflow:hidden;
 }
+.btn-action::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 30%,rgba(255,255,255,0.1) 50%,transparent 70%);opacity:0;transition:opacity 0.3s}
+.btn-action:hover::after{opacity:1}
+.btn-action:active{transform:scale(0.95)}
+.btn-feed{background:linear-gradient(135deg,#c084fc,#a855f7);color:#fff;box-shadow:0 4px 20px rgba(192,132,252,0.25)}
+.btn-rest{background:linear-gradient(135deg,#f472b6,#ec4899);color:#fff;box-shadow:0 4px 20px rgba(244,114,182,0.25)}
 
-/* Stats */
-.stats{
-display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0;
-}
-.stat{
-background:var(--card);border-radius:12px;padding:8px 6px;text-align:center;border:1px solid rgba(255,255,255,0.06);
-}
-.stat .label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
-.stat .value{font-size:20px;font-weight:800;margin-top:1px}
-.stat .value.fat{color:var(--accent)}
-.stat .value.brain{color:var(--accent3)}
-.stat .value.energy{color:var(--accent2)}
-.stat .sub{font-size:10px;color:var(--text2);margin-top:-1px}
-
-/* Bars */
-.bars{display:flex;flex-direction:column;gap:4px;margin:4px 0 8px}
-.bar-row{display:flex;align-items:center;gap:6px}
-.bar-row .bar-label{font-size:10px;width:45px;color:var(--text2);flex-shrink:0}
-.bar-track{flex:1;height:12px;background:rgba(255,255,255,0.08);border-radius:6px;overflow:hidden;position:relative}
-.bar-fill{height:100%;border-radius:6px;transition:width 0.5s ease;position:relative}
-.bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.15);border-radius:6px 6px 0 0}
-.bar-fill.hunger{background:linear-gradient(90deg,var(--accent),#ff9500)}
-.bar-fill.brain{background:linear-gradient(90deg,var(--accent3),#00ddff)}
-.bar-fill.energy{background:linear-gradient(90deg,var(--accent2),#ffaa00)}
-
-/* Buttons */
-.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
-.btn{
-padding:10px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
-transition:all 0.15s;touch-action:manipulation;font-family:var(--font);
-}
-.btn:active{transform:scale(0.95)}
-.btn.feed{background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff;box-shadow:0 4px 15px rgba(255,107,53,0.3)}
-.btn.feed:hover{box-shadow:0 6px 20px rgba(255,107,53,0.5)}
-.btn.rest{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 4px 15px rgba(124,58,237,0.3)}
-.btn.rest:hover{box-shadow:0 6px 20px rgba(124,58,237,0.5)}
-
-/* Shop */
-.shop{margin:8px 0}
-.shop h3{font-size:12px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+/* SHOP */
+.shop-section{margin-bottom:16px}
+.shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.shop-header h3{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+.shop-header .hint{font-size:9px;color:var(--text3)}
 .shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.shop-item{
-background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+.shop-card{
+background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border-radius:12px;padding:10px;text-align:center;cursor:pointer;
+border:1px solid rgba(255,255,255,0.06);transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+position:relative;overflow:hidden;
 }
-.shop-item:active{transform:scale(0.95)}
-.shop-item .icon{font-size:24px}
-.shop-item .name{font-size:11px;font-weight:600;margin:2px 0}
-.shop-item .cost{font-size:10px;color:var(--accent);font-weight:700}
-.shop-item .effect{font-size:9px;color:var(--text2)}
-.shop-item .level{font-size:9px;color:var(--accent3);font-weight:700}
-.shop-item.affordable{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.05))}
-.shop-item.affordable:hover{border-color:rgba(0,255,136,0.5);box-shadow:0 0 15px rgba(0,255,136,0.1)}
-.shop-item.locked{opacity:0.4;cursor:not-allowed}
-.shop-item .badge{
-position:absolute;top:-3px;right:-3px;background:var(--accent2);color:#000;
-width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;
-}
+.shop-card:active{transform:scale(0.94)}
+.shop-card .icon{font-size:22px;margin-bottom:2px}
+.shop-card .name{font-size:11px;font-weight:600;margin-bottom:1px;color:var(--text)}
+.shop-card .cost{font-size:10px;color:var(--pink);font-weight:700}
+.shop-card .desc{font-size:8px;color:var(--text3);line-height:1.3}
+.shop-card .lvl{position:absolute;top:4px;right:4px;font-size:9px;font-weight:700;color:var(--success);background:rgba(0,255,136,0.1);border-radius:8px;padding:1px 6px}
+.shop-card.affordable{background:linear-gradient(135deg,var(--surface),rgba(236,72,153,0.06));border-color:rgba(236,72,153,0.15)}
+.shop-card.affordable:hover{border-color:rgba(236,72,153,0.3);box-shadow:0 0 20px rgba(236,72,153,0.08)}
+.shop-card.locked{opacity:0.35;cursor:not-allowed}
+.shop-card.locked:active{transform:none}
 
-/* Footer stats */
-.footer{
-display:flex;justify-content:space-between;padding:8px 4px;margin-top:4px;
-background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,0.06);
+/* FOOTER */
+.footer-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.footer-card{
+background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border-radius:12px;padding:10px 8px;text-align:center;border:1px solid rgba(255,255,255,0.04);
 }
-.footer-stat{text-align:center}
-.footer-stat .num{font-size:16px;font-weight:800}
-.footer-stat .num.fails{color:var(--danger)}
-.footer-stat .num.total{color:var(--accent)}
-.footer-stat .num.days{color:var(--accent2)}
-.footer-stat .lbl{font-size:9px;color:var(--text2);text-transform:uppercase}
+.footer-card .num{font-size:18px;font-weight:800;line-height:1}
+.footer-card .num.danger{color:var(--danger)}
+.footer-card .num.pink{color:var(--pink)}
+.footer-card .num.amber{color:var(--amber)}
+.footer-card .lbl{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
 
-/* Event Modal */
+/* RESET */
+.reset-btn{
+position:fixed;bottom:16px;right:16px;width:36px;height:36px;border-radius:50%;
+background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+border:1px solid rgba(255,255,255,0.06);color:var(--text3);font-size:14px;cursor:pointer;
+transition:all 0.3s;z-index:50;display:flex;align-items:center;justify-content:center;
+}
+.reset-btn:hover{background:rgba(255,51,85,0.15);border-color:var(--danger);color:var(--danger)}
+
+/* EVENT MODAL */
 .event-overlay{
 position:fixed;top:0;left:0;width:100%;height:100%;
-background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
-display:none;align-items:center;justify-content:center;z-index:100;
+background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+display:none;align-items:center;justify-content:center;z-index:100;padding:20px;
 }
 .event-overlay.show{display:flex}
 .event-modal{
-background:linear-gradient(135deg,#2a1a4e,#1a1a3e);
-border-radius:20px;padding:24px;max-width:340px;width:90%;text-align:center;
-border:2px solid var(--accent);box-shadow:0 0 40px rgba(255,107,53,0.3);
-animation:slideIn 0.3s ease;
+background:linear-gradient(145deg,#1a1a3e,rgba(236,72,153,0.06));
+border-radius:24px;padding:28px 24px;max-width:320px;width:100%;text-align:center;
+border:1px solid rgba(255,255,255,0.08);box-shadow:0 0 60px rgba(236,72,153,0.1);
+animation:modalIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
 }
-.event-modal .event-icon{font-size:48px;margin-bottom:8px}
-.event-modal h2{font-size:18px;margin-bottom:4px}
-.event-modal p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.4}
-.event-modal .btn{min-width:120px;padding:10px 20px}
-.event-modal .btn.event-action{background:linear-gradient(135deg,var(--accent),#ff9500);color:#fff;font-size:14px}
-.event-modal .btn.event-action.success{background:linear-gradient(135deg,var(--accent3),#00cc66)}
-.event-modal .btn.event-action.danger{background:linear-gradient(135deg,var(--danger),#cc0033)}
+.event-modal .ev-icon{font-size:56px;margin-bottom:8px;display:block}
+.event-modal h2{font-size:20px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px}
+.event-modal p{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.5}
+.event-btn{
+padding:14px 32px;border:none;border-radius:14px;font-size:15px;font-weight:700;font-family:var(--font);
+cursor:pointer;transition:all 0.2s;min-width:140px;touch-action:manipulation;
+background:linear-gradient(135deg,var(--pink),#ff6ba6);color:#fff;
+box-shadow:0 4px 20px rgba(236,72,153,0.3);
+}
+.event-btn:active{transform:scale(0.94)}
+.event-btn.success{background:linear-gradient(135deg,var(--success),#00cc66);box-shadow:0 4px 20px rgba(0,255,136,0.25)}
+.event-btn.danger{background:linear-gradient(135deg,var(--danger),#ff5577);box-shadow:0 4px 20px rgba(255,51,85,0.25)}
 
-/* Toast */
+/* TOAST */
+.toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none}
 .toast{
-position:fixed;top:20px;left:50%;transform:translateX(-50%);
-background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);color:#fff;padding:10px 20px;
-border-radius:12px;font-size:13px;font-weight:600;z-index:200;border:1px solid rgba(255,255,255,0.1);
-animation:slideIn 0.3s ease;pointer-events:none;
+background:rgba(8,8,16,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+color:#fff;padding:10px 20px;border-radius:14px;font-size:13px;font-weight:600;
+border:1px solid rgba(255,255,255,0.08);box-shadow:0 8px 30px rgba(0,0,0,0.4);
+animation:modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1);margin-bottom:8px;
 }
 
-/* Reset button */
-.reset-btn{
-position:fixed;bottom:12px;right:12px;width:36px;height:36px;border-radius:50%;
-background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
-color:var(--text2);font-size:14px;cursor:pointer;transition:all 0.2s;z-index:50;
-display:flex;align-items:center;justify-content:center;
+/* DAY CHANGE */
+.celebration{
+position:fixed;top:0;left:0;width:100%;height:100%;
+display:flex;align-items:center;justify-content:center;z-index:150;pointer-events:none;
+background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);
+opacity:0;transition:opacity 0.5s;
 }
-.reset-btn:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
-
-/* Responsive */
-@media(max-width:400px){
-#app{padding:8px}
-.egor-container{width:160px;height:160px}
-.header h1{font-size:18px}
-.stat .value{font-size:16px}
+.celebration.show{opacity:1}
+.celebration-text{
+font-family:var(--font-title);font-size:48px;letter-spacing:4px;
+background:linear-gradient(135deg,var(--amber),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+animation:modalIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-/* Egor face states when no photo */
-.egor-face .emoji-face{
-width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:120px;
-transition:all 0.3s;
+@media(max-width:380px){
+#app{padding:12px}
+.egor-wrap{width:150px;height:150px}
+.header h1{font-size:24px}
+.stat-value{font-size:18px}
 }
-.egor-face.happy .emoji-face{animation:bounce 0.5s ease}
-.egor-face.angry .emoji-face{animation:shake 0.5s ease}
-.egor-face.stupid .emoji-face{animation:spin 0.5s ease}
 </style>
 </head>
 <body>
 
+<div class="bg-glow"></div>
+<div class="bg-particles">
+  <div class="bg-dot"></div><div class="bg-dot"></div><div class="bg-dot"></div>
+  <div class="bg-dot"></div><div class="bg-dot"></div><div class="bg-dot"></div>
+</div>
+
 <div id="app">
-  <!-- Header -->
   <div class="header">
-    <h1>🐷 ЕГОР-КЛИКЕР</h1>
-    <div class="day">День <span id="dayNum">1</span> • Провалов: <span id="failCount">0</span></div>
+    <h1>ЕГОР-КЛИКЕР</h1>
+    <div class="sub">День <span id="dayDisplay">1</span> · Провалов <span id="failDisplay">0</span></div>
   </div>
 
-  <!-- Egor face clickable -->
-  <div class="egor-container" id="egorContainer">
-    <div class="egor-face" id="egorFace">
-      <div class="emoji-face" id="egorEmoji">😎</div>
-      <div class="particles" id="particles"></div>
+  <div class="photo-section">
+    <div class="egor-wrap" id="egorClick">
+      <div class="egor-border"></div>
+      <img class="egor-img" id="egorPhoto" src="https://api-minecraft.net/qltokfgp.jpg" alt="Егор" crossorigin="anonymous">
+      <div class="ripple-container" id="rippleBox"></div>
+      <div class="particle-box" id="particleBox"></div>
     </div>
+    <div class="click-hint">👇 КЛИКАЙ ПО ЕГОРУ</div>
   </div>
 
-  <!-- Stats -->
-  <div class="stats">
-    <div class="stat">
-      <div class="label">🍔 Жир</div>
-      <div class="value fat" id="fatDisplay">0</div>
-      <div class="sub">+<span id="fatPerSec">0</span>/сек</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon">🍔</div>
+      <div class="stat-value pink" id="fatVal">0</div>
+      <div class="stat-label">Жир</div>
+      <div class="stat-sub">+<span id="fps">0</span>/сек</div>
     </div>
-    <div class="stat">
-      <div class="label">🧠 Мозги</div>
-      <div class="value brain" id="brainDisplay">100</div>
-      <div class="sub">-<span id="brainDrain">1</span>/сек</div>
+    <div class="stat-card">
+      <div class="stat-icon">🧠</div>
+      <div class="stat-value green" id="brainVal">100</div>
+      <div class="stat-label">Мозги</div>
+      <div class="stat-sub">-<span id="bpd">1</span>/сек</div>
     </div>
-    <div class="stat">
-      <div class="label">⚡ Энергия</div>
-      <div class="value energy" id="energyDisplay">100</div>
-      <div class="sub">-<span id="energyDrain">1</span>/сек</div>
-    </div>
-  </div>
-
-  <!-- Bars -->
-  <div class="bars">
-    <div class="bar-row">
-      <div class="bar-label">🍔 Жир</div>
-      <div class="bar-track"><div class="bar-fill hunger" id="hungerBar" style="width:50%"></div></div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-label">🧠 Мозги</div>
-      <div class="bar-track"><div class="bar-fill brain" id="brainBar" style="width:100%"></div></div>
-    </div>
-    <div class="bar-row">
-      <div class="bar-label">⚡ Энергия</div>
-      <div class="bar-track"><div class="bar-fill energy" id="energyBar" style="width:100%"></div></div>
+    <div class="stat-card">
+      <div class="stat-icon">⚡</div>
+      <div class="stat-value amber" id="energyVal">100</div>
+      <div class="stat-label">Энергия</div>
+      <div class="stat-sub">-<span id="epd">1</span>/сек</div>
     </div>
   </div>
 
-  <!-- Actions -->
+  <div class="bars-group">
+    <div class="bar-row"><span class="bar-icon">🍔</span><div class="bar-track"><div class="bar-fill pink" id="fatBar" style="width:50%"></div></div></div>
+    <div class="bar-row"><span class="bar-icon">🧠</span><div class="bar-track"><div class="bar-fill cyan" id="brainBar" style="width:100%"></div></div></div>
+    <div class="bar-row"><span class="bar-icon">⚡</span><div class="bar-track"><div class="bar-fill amber" id="energyBar" style="width:100%"></div></div></div>
+  </div>
+
   <div class="actions">
-    <button class="btn feed" id="btnFeed">🍔 Покормить</button>
-    <button class="btn rest" id="btnRest">💤 Отдохнуть</button>
+    <button class="btn-action btn-feed" id="btnFeed">🍔 Покормить</button>
+    <button class="btn-action btn-rest" id="btnRest">💤 Отдохнуть</button>
   </div>
 
-  <!-- Shop -->
-  <div class="shop">
-    <h3>🏪 Магазин</h3>
+  <div class="shop-section">
+    <div class="shop-header">
+      <h3>🏪 Магазин хлама</h3>
+      <span class="hint">жми чтобы купить</span>
+    </div>
     <div class="shop-grid" id="shopGrid"></div>
   </div>
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-stat"><div class="num fails" id="totalFails">0</div><div class="lbl">💀 Провалы</div></div>
-    <div class="footer-stat"><div class="num total" id="totalFat">0</div><div class="lbl">🍔 Всего жира</div></div>
-    <div class="footer-stat"><div class="num days" id="totalDays">1</div><div class="lbl">📅 Дней</div></div>
+  <div class="footer-stats">
+    <div class="footer-card"><div class="num danger" id="failsTotal">0</div><div class="lbl">💀 Провалы</div></div>
+    <div class="footer-card"><div class="num pink" id="totalFatVal">0</div><div class="lbl">🍔 Всего жира</div></div>
+    <div class="footer-card"><div class="num amber" id="dayTotal">1</div><div class="lbl">📅 Дни</div></div>
   </div>
 </div>
 
-<!-- Event overlay -->
-<div class="event-overlay" id="eventOverlay">
-  <div class="event-modal" id="eventModal">
-    <div class="event-icon" id="eventIcon">💥</div>
-    <h2 id="eventTitle">ПРИСТУП ТУПОСТИ!</h2>
-    <p id="eventDesc">Егор перестал думать. Жми быстро!</p>
-    <button class="btn event-action" id="eventBtn">🔨 Жми!</button>
-  </div>
-</div>
-
-<!-- Reset -->
 <button class="reset-btn" id="resetBtn">↺</button>
 
+<div class="event-overlay" id="eventOverlay">
+  <div class="event-modal">
+    <span class="ev-icon" id="evIcon">💥</span>
+    <h2 id="evTitle">ПРИСТУП ТУПОСТИ!</h2>
+    <p id="evDesc">Егор перестал думать. Жми!</p>
+    <button class="event-btn" id="evBtn">🔨 Жми быстро!</button>
+  </div>
+</div>
+
+<div class="celebration" id="celebration"><div class="celebration-text">🌙 НОВЫЙ ДЕНЬ</div></div>
+<div class="toast-container" id="toastBox"></div>
+
 <script>
-// ====== GAME STATE ======
-const state = {
-  fat: 0,
-  brains: 100,
-  maxBrains: 100,
-  energy: 100,
-  maxEnergy: 100,
-  hunger: 50,
-  day: 1,
-  fails: 0,
-  totalFat: 0,
-  fatPerClick: 1,
-  fatPerSec: 0,
-  brainDrain: 1,
-  energyDrain: 1,
-  clickPower: 1,
-  upgrades: {
-    doshik: 0,
-    pelmeni: 0,
-    kreslo: 0,
-    divan: 0,
-    phone: 0,
-    folga: 0,
-  },
-  eventActive: false,
-  phoneFreeze: false,
-  combo: 0,
-  lastClickTime: 0,
-  eventCooldown: 0,
+const $=id=>document.getElementById(id);
+const state={
+  fat:0,brains:100,maxBrains:100,energy:100,maxEnergy:100,hunger:50,day:1,fails:0,totalFat:0,
+  upgrades:{dos:0,pel:0,kre:0,div:0,phn:0,fol:0},
+  eventActive:false,combo:0,lastClick:0,evCooldown:0
 };
-
-// ====== SHOP DEFINITIONS ======
-const shopItems = [
-  { id:'doshik', icon:'🍜', name:'Дошик', baseCost:15, costMult:1.5, effect:'+1 жир/сек', desc:'Еда бедняка' },
-  { id:'pelmeni', icon:'🥟', name:'Пельмени', baseCost:50, costMult:1.6, effect:'+3 жир/сек', desc:'С соседом по общаге' },
-  { id:'kreslo', icon:'🪑', name:'Кресло', baseCost:30, costMult:1.8, effect:'+1 жир/клик', desc:'Б/у, но норм' },
-  { id:'divan', icon:'🛋️', name:'Диван', baseCost:80, costMult:1.8, effect:'+2 жир/клик', desc:'С пружинами наружу' },
-  { id:'phone', icon:'📱', name:'Телефон', baseCost:60, costMult:2.0, effect:'Меньше скуки', desc:'ТикТок — сила' },
-  { id:'folga', icon:'🤖', name:'Шапка из фольги', baseCost:100, costMult:2.0, effect:'-50% приступов', desc:'Защита от тупости' },
+const shop=[
+  {id:'dos',i:'🍜',n:'Дошик',c:15,m:1.5,e:'+1 жир/сек'},
+  {id:'pel',i:'🥟',n:'Пельмени',c:50,m:1.6,e:'+3 жир/сек'},
+  {id:'kre',i:'🪑',n:'Кресло',c:30,m:1.8,e:'+1 жир/клик'},
+  {id:'div',i:'🛋️',n:'Диван',c:80,m:1.8,e:'+2 жир/клик'},
+  {id:'phn',i:'📱',n:'Телефон',c:60,m:2.0,e:'Больше скуки'},
+  {id:'fol',i:'🤖',n:'Шапка фольги',c:100,m:2.0,e:'-50% тупости'},
+];
+const events=[
+  {i:'💥',t:'ПРИСТУП ТУПОСТИ!',d:'Егор тупит. Жми быстро!',b:'🧠 Жми!',tp:'tap',n:7,ti:3500,s:{t:'Ура!',d:'Не накосячил.'},f:{t:'Провал!',d:'Накосячил.'}},
+  {i:'📱',t:'ЗАВИС В ТЕЛЕФОНЕ',d:'Егор в ТикТоке. Жди 3 сек.',b:'Ждать...',tp:'wait',n:3000,s:{t:'Отлип',d:'Ну ещё видос...'},f:{t:'Залип',d:'-10 жира.'}},
+  {i:'🍝',t:'СТРАННАЯ ЕДА',d:'Егор ест макароны с вареньем.',b:'🍴 Ок',tp:'bonus',n:5,s:{t:'Он доволен',d:'+5 жира!'},f:{t:'Тошнит',d:'-3 жира.'}},
+  {i:'⏰',t:'ОПОЗДАЛ!',d:'Егор проспал. Шеф звонит!',b:'📞 Оправд.',tp:'tap',n:4,ti:3000,s:{t:'Повезло',d:'Сказал пробки.'},f:{t:'Уволен',d:'¯\\_(ツ)_/¯'}},
+  {i:'🤡',t:'АНЕКДОТ ОТ ЕГОРА',d:'"Идет медведь... короче, забыл."',b:'😂 Смеяться',tp:'tap',n:3,ti:2000,s:{t:'Егор счастлив',d:'+3 жира!'},f:{t:'Кринж',d:'-2 жира.'}},
 ];
 
-// ====== DOM REFS ======
-const $ = id => document.getElementById(id);
-const egorFace = $('egorFace');
-const egorEmoji = $('egorEmoji');
-const particles = $('particles');
+function cost(id){const s=shop.find(x=>x.id===id);const l=state.upgrades[id]||0;return Math.floor(s.c*Math.pow(s.m,l))}
+function fps(){return state.upgrades.dos*1+state.upgrades.pel*3}
+function fpc(){return 1+state.upgrades.kre*1+state.upgrades.div*2}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function rnd(a,b){return a+Math.random()*(b-a)}
 
-// ====== EVENT MESSAGES ======
-const events = [
-  {
-    icon:'💥', title:'ПРИСТУП ТУПОСТИ!', 
-    desc:'Егор перестал думать. Жми быстро, чтобы он не накосячил!',
-    action:'🧠 ДУМАТЬ!', type:'tap', taps:7, time:4000,
-    success:{title:'Ура! Не накосячил!', desc:'Егор справился... в этот раз.'},
-    fail:{title:'Провал!', desc:'Егор накосячил. Снова.'},
-  },
-  {
-    icon:'📱', title:'ЗАВИС В ТЕЛЕФОНЕ',
-    desc:'Егор залип в ТикТок. Клики бесполезны 3 секунды!',
-    action:'😤 Ждать...', type:'wait', duration:3000,
-    success:{title:'Отлип наконец-то', desc:'Егор: "Ща еще один видос..."'},
-    fail:{title:'Залип ещё сильнее', desc:'Теряешь 10 жира от бессилия.'},
-  },
-  {
-    icon:'🍝', title:'СТРАННАЯ ЕДА',
-    desc:'Егор ест макароны с вареньем. Это даёт +5 жира!',
-    action:'🍴 Наблюдать', type:'bonus', bonus:5,
-    success:{title:'Он доволен', desc:'Егор: "Мам, эт вкусно!"'},
-    fail:{title:'Тебя стошнило', desc:'Теряешь 3 жира.'},
-  },
-  {
-    icon:'⏰', title:'ОПОЗДАЛ!',
-    desc:'Егор проспал. Опять. Шеф звонит!',
-    action:'📞 Оправдываться', type:'tap', taps:4, time:3000,
-    success:{title:'Повезло', desc:'Сказал, что пробки. Шеф поверил.'},
-    fail:{title:'УВОЛЕН!', desc:'Шучу. Но жир -15.'},
-  },
-  {
-    icon:'🤡', title:'ЕГОР РАССКАЗЫВАЕТ АНЕКДОТ',
-    desc:'"Идет медведь по лесу... видит... короче, я забыл."',
-    action:'😂 Смеяться вежливо', type:'tap', taps:3, time:2000,
-    success:{title:'Егор счастлив', desc:'Он думает, что он забавный. +3 жира!'},
-    fail:{title:'Ты не выдержал', desc:'"Это был тот же анекдот в 5-й раз." -2 жира.'},
-  },
-];
-
-// ====== SOUND (Web Audio) ======
-let audioCtx;
-function playTone(freq, duration, type='square', vol=0.08) {
-  try {
-    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-    osc.start();
-    osc.stop(audioCtx.currentTime + duration);
-  } catch(e) {}
+const audio={ctx:null};
+function tone(f,d,t='square',v=0.06){
+  try{
+    if(!audio.ctx)audio.ctx=new(window.AudioContext||window.webkitAudioContext)();
+    const o=audio.ctx.createOscillator(),g=audio.ctx.createGain();
+    o.type=t;o.frequency.value=f;g.gain.setValueAtTime(v,audio.ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,audio.ctx.currentTime+d);
+    o.connect(g);g.connect(audio.ctx.destination);o.start();o.stop(audio.ctx.currentTime+d);
+  }catch(e){}
 }
-function playClick() { playTone(600, 0.08, 'square', 0.06) }
-function playSuccess() { playTone(800, 0.1); setTimeout(()=>playTone(1000,0.1),100) }
-function playFail() { playTone(200, 0.2, 'sawtooth', 0.08) }
-function playBuy() { playTone(500, 0.06); setTimeout(()=>playTone(700,0.06),80) }
+function sndClick(){tone(600,0.07)}
+function sndGood(){tone(800,0.08);setTimeout(()=>tone(1000,0.08),80)}
+function sndBad(){tone(200,0.2,'sawtooth',0.07)}
+function sndBuy(){tone(500,0.05);setTimeout(()=>tone(700,0.05),60)}
 
-// ====== SAVE/LOAD ======
-function save() {
-  try { localStorage.setItem('egorClicker', JSON.stringify(state)) } catch(e) {}
-}
-function load() {
-  try {
-    const d = JSON.parse(localStorage.getItem('egorClicker'));
-    if(d) Object.assign(state, d);
-  } catch(e) {}
+function save(){try{localStorage.setItem('egor2',JSON.stringify(state))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('egor2'));if(d)Object.assign(state,d)}catch(e){}}
+
+function clickEgor(e){
+  if(state.eventActive)return;
+  const now=Date.now();
+  if(now-state.lastClick<250)state.combo++;else state.combo=1;
+  state.lastClick=now;
+  if(state.energy<=0)return toast('💀 Егор в отключке! Покорми или отдохни.');
+  if(state.brains<=0)return toast('🧠💥 Мозгов нет! Отдохни.');
+  const cb=Math.min(state.combo,10)*0.1,ep=state.energy<20?0.5:1;
+  const earn=Math.floor((fpc()+state.combo*0.02)*ep);
+  state.fat+=earn;state.totalFat+=earn;
+  state.brains=clamp(state.brains-1,0,state.maxBrains);
+  state.energy=clamp(state.energy-1,0,state.maxEnergy);
+  sndClick();spawnRipple(e);spawnParticle('+'+earn+' 🍔');
+  checkEvents();update();save();
 }
 
-// ====== GAME LOGIC ======
-function getUpgradeCost(id) {
-  const item = shopItems.find(i => i.id === id);
-  if(!item) return Infinity;
-  const level = state.upgrades[id] || 0;
-  return Math.floor(item.baseCost * Math.pow(item.costMult, level));
+function spawnRipple(e){
+  const box=$('rippleBox'),r=document.createElement('div');
+  r.className='ripple-el';
+  if(e&&e.clientX){
+    const rect=box.getBoundingClientRect();
+    r.style.left=(e.clientX-rect.left-10)+'px';r.style.top=(e.clientY-rect.top-10)+'px';
+  }else{r.style.left='80px';r.style.top='80px'}
+  r.style.width=r.style.height=(15+rnd(0,15))+'px';
+  box.appendChild(r);setTimeout(()=>r.remove(),700);
 }
 
-function getFatPerSec() {
-  const d = state.upgrades.doshik * 1;
-  const p = state.upgrades.pelmeni * 3;
-  return d + p;
+function spawnParticle(t){
+  const box=$('particleBox'),p=document.createElement('div');
+  p.className='particle-el';p.textContent=t;
+  p.style.left=rnd(20,70)+'%';p.style.top=rnd(20,50)+'%';
+  p.style.fontSize=(16+rnd(0,12))+'px';
+  box.appendChild(p);setTimeout(()=>p.remove(),1000);
 }
 
-function getFatPerClick() {
-  const k = state.upgrades.kreslo * 1;
-  const d = state.upgrades.divan * 2;
-  return 1 + k + d;
+function feed(){
+  if(state.eventActive)return;
+  state.hunger=clamp(state.hunger+25,0,100);
+  state.energy=clamp(state.energy+15,0,state.maxEnergy);
+  state.fat+=3;state.totalFat+=3;
+  sndGood();toast('🍔 Егор покушал!');update();save();
+}
+function rest(){
+  if(state.eventActive)return;
+  state.energy=clamp(state.energy+30,0,state.maxEnergy);
+  state.brains=clamp(state.brains+10,0,state.maxBrains);
+  sndGood();toast('💤 Егор поспал!');update();save();
 }
 
-function getBrainDrain() {
-  return 1 + Math.floor(state.day / 3);
+function checkEvents(){
+  if(state.eventActive||state.evCooldown>0){if(state.evCooldown>0)state.evCooldown--;return}
+  const chance=Math.min(0.1,0.06-(state.upgrades.fol||0)*0.03);
+  if(state.upgrades.fol>0&&Math.random()<0.5)return;
+  if(Math.random()<chance){const e=events[Math.floor(Math.random()*events.length)];triggerEvent(e)}
 }
 
-function getEnergyDrain() {
-  return 1 + Math.floor(state.day / 5);
-}
-
-function getEventChance() {
-  const folga = state.upgrades.folga || 0;
-  const reduction = folga * 0.5;
-  return Math.max(0.02, 0.08 - reduction * 0.04);
-}
-
-function clamp(v, min, max) { return Math.max(min, Math.min(max, v)) }
-
-function clickEgor() {
-  if(state.eventActive || state.phoneFreeze) return;
-  
-  const now = Date.now();
-  if(now - state.lastClickTime < 300) state.combo++;
-  else state.combo = 1;
-  state.lastClickTime = now;
-  
-  if(state.energy <= 0) {
-    showToast('💀 Егор слишком уставший! Покорми или отдохни!');
-    state.combo = 0;
-    return;
-  }
-  if(state.brains <= 0) {
-    showToast('🧠💥 У Егора нет мозгов! Отдохни, пусть подумает.');
-    state.combo = 0;
-    return;
-  }
-  
-  const comboBonus = Math.min(state.combo, 10) * 0.1;
-  const energyPenalty = state.energy < 20 ? 0.5 : 1;
-  const earned = Math.floor((getFatPerClick() + state.fatPerClick) * (1 + comboBonus) * energyPenalty);
-  
-  state.fat += earned;
-  state.totalFat += earned;
-  state.brains = clamp(state.brains - 1, 0, state.maxBrains);
-  state.energy = clamp(state.energy - 1, 0, state.maxEnergy);
-  
-  playClick();
-  spawnParticle('+' + earned + ' 🍔', '#ff6b35');
-  setFaceState('happy');
-  update();
-  checkEvents();
-  save();
-}
-
-function spawnParticle(text, color) {
-  const p = document.createElement('div');
-  p.className = 'particle';
-  p.textContent = text;
-  p.style.color = color;
-  p.style.left = (20 + Math.random() * 60) + '%';
-  p.style.top = (10 + Math.random() * 30) + '%';
-  p.style.fontSize = (14 + Math.random() * 10) + 'px';
-  p.style.fontWeight = '800';
-  particles.appendChild(p);
-  setTimeout(() => p.remove(), 1000);
-}
-
-function feed() {
-  if(state.eventActive) return;
-  state.hunger = clamp(state.hunger + 25, 0, 100);
-  state.energy = clamp(state.energy + 15, 0, state.maxEnergy);
-  state.fat += 3;
-  state.totalFat += 3;
-  playSuccess();
-  spawnParticle('🍔 +25 сытость', '#ff9500');
-  showToast('🍔 Егор покушал! "Мам, добавки!"');
-  setFaceState('happy');
-  update();
-  save();
-}
-
-function rest() {
-  if(state.eventActive) return;
-  state.energy = clamp(state.energy + 30, 0, state.maxEnergy);
-  state.brains = clamp(state.brains + 10, 0, state.maxBrains);
-  playSuccess();
-  spawnParticle('💤 +30 энергии', '#a855f7');
-  showToast('💤 Егор поспал. Храп на всю комнату.');
-  setFaceState('stupid');
-  update();
-  save();
-}
-
-function setFaceState(mood) {
-  egorFace.className = 'egor-face';
-  if(mood) egorFace.classList.add(mood);
-  const emojis = {happy:'😄', angry:'😡', stupid:'😵', default:'😎'};
-  egorEmoji.textContent = emojis[mood] || emojis.default;
-}
-
-// ====== EVENTS ======
-let eventTapCount = 0;
-let eventTimer = null;
-
-function checkEvents() {
-  if(state.eventActive) return;
-  if(state.eventCooldown > 0) { state.eventCooldown--; return }
-  if(state.upgrades.folga > 0 && Math.random() < 0.5) return;
-  
-  if(Math.random() < getEventChance()) {
-    const evt = events[Math.floor(Math.random() * events.length)];
-    triggerEvent(evt);
-  }
-}
-
-function triggerEvent(evt) {
-  state.eventActive = true;
-  const overlay = $('eventOverlay');
-  const modal = $('eventModal');
-  $('eventIcon').textContent = evt.icon;
-  $('eventTitle').textContent = evt.title;
-  $('eventDesc').textContent = evt.desc;
-  const btn = $('eventBtn');
-  btn.textContent = evt.action;
-  btn.className = 'btn event-action';
-  
+let evTaps=0,evTimer=null;
+function triggerEvent(e){
+  state.eventActive=true;
+  const overlay=$('eventOverlay');
+  $('evIcon').textContent=e.i;$('evTitle').textContent=e.t;$('evDesc').textContent=e.d;
+  const btn=$('evBtn');btn.textContent=e.b;btn.className='event-btn';
   overlay.classList.add('show');
-  
-  if(evt.type === 'wait') {
-    btn.onclick = null;
-    btn.style.pointerEvents = 'none';
-    btn.style.opacity = '0.5';
-    setTimeout(() => {
-      btn.style.pointerEvents = 'auto';
-      btn.style.opacity = '1';
-      btn.onclick = () => resolveEvent(true, evt);
-      btn.textContent = '✅ Готово';
-    }, evt.duration);
-  } else if(evt.type === 'bonus') {
-    btn.onclick = () => resolveEvent(true, evt);
-  } else if(evt.type === 'tap') {
-    eventTapCount = 0;
-    const needed = evt.taps;
-    const timeLimit = evt.time;
-    btn.textContent = `${evt.action} (0/${needed})`;
-    btn.onclick = () => {
-      eventTapCount++;
-      btn.textContent = `${evt.action} (${eventTapCount}/${needed})`;
-      btn.style.transform = 'scale(0.93)';
-      setTimeout(() => btn.style.transform = 'scale(1)', 80);
-      playTone(400 + eventTapCount * 50, 0.06);
-      if(eventTapCount >= needed) {
-        resolveEvent(true, evt);
-      }
+  if(e.tp==='wait'){
+    btn.style.pointerEvents='none';btn.style.opacity='0.4';
+    setTimeout(()=>{btn.style.pointerEvents='auto';btn.style.opacity='1';btn.onclick=()=>resolveEv(true,e)},e.n);
+  }else if(e.tp==='bonus'){
+    btn.style.opacity='1';btn.style.pointerEvents='auto';btn.onclick=()=>resolveEv(true,e);
+  }else if(e.tp==='tap'){
+    evTaps=0;btn.onclick=()=>{
+      evTaps++;btn.textContent=`${e.b} (${evTaps}/${e.n})`;
+      btn.style.transform='scale(0.93)';setTimeout(()=>btn.style.transform='scale(1)',80);
+      tone(400+evTaps*50,0.05);
+      if(evTaps>=e.n)resolveEv(true,e);
     };
-    setTimeout(() => {
-      if(state.eventActive) resolveEvent(false, evt);
-    }, timeLimit);
+    evTimer=setTimeout(()=>{if(state.eventActive)resolveEv(false,e)},e.ti);
   }
 }
-
-function resolveEvent(success, evt) {
-  if(!state.eventActive) return;
-  state.eventActive = false;
-  $('eventOverlay').classList.remove('show');
-  if(eventTimer) { clearTimeout(eventTimer); eventTimer = null }
-  
-  if(success) {
-    showToast('✅ ' + evt.success.title);
-    if(evt.type === 'bonus') {
-      state.fat += evt.bonus;
-      state.totalFat += evt.bonus;
-      spawnParticle('+' + evt.bonus + ' 🍔', '#00ff88');
-    }
-    state.fat += 2;
-    state.totalFat += 2;
-    playSuccess();
-    setFaceState('happy');
-  } else {
-    showToast('❌ ' + evt.fail.title);
-    state.fails++;
-    const penalty = evt.type === 'bonus' ? 3 : (evt.type === 'wait' ? 10 : 5);
-    state.fat = Math.max(0, state.fat - penalty);
-    playFail();
-    setFaceState('angry');
-    document.getElementById('app').style.animation = 'shake 0.4s ease';
-    setTimeout(() => document.getElementById('app').style.animation = '', 400);
+function resolveEv(ok,e){
+  if(!state.eventActive)return;state.eventActive=false;$('eventOverlay').classList.remove('show');
+  if(evTimer){clearTimeout(evTimer);evTimer=null}
+  if(ok){
+    toast('✅ '+e.s.t);state.fat+=2;state.totalFat+=2;
+    if(e.tp==='bonus'){state.fat+=e.n;state.totalFat+=e.n;spawnParticle('+'+e.n+' 🍔')}
+    sndGood();
+  }else{
+    toast('❌ '+e.f.t);state.fails++;const p=e.tp==='wait'?10:e.tp==='bonus'?3:5;
+    state.fat=Math.max(0,state.fat-p);sndBad();
+    $('app').style.animation='shake 0.4s ease';setTimeout(()=>$('app').style.animation='',400);
   }
-  state.eventCooldown = 5 + Math.floor(Math.random() * 10);
-  update();
-  save();
+  state.evCooldown=8+Math.floor(Math.random()*8);update();save();
 }
+$('eventOverlay').addEventListener('click',function(e){
+  if(e.target===this&&state.eventActive){state.eventActive=false;this.classList.remove('show');state.fails++;sndBad();toast('❌ Струсил!');update();save()}
+});
 
-// ====== SHOP ======
-function renderShop() {
-  const grid = $('shopGrid');
-  grid.innerHTML = '';
-  shopItems.forEach(item => {
-    const cost = getUpgradeCost(item.id);
-    const level = state.upgrades[item.id] || 0;
-    const canAfford = state.fat >= cost;
-    const div = document.createElement('div');
-    div.className = 'shop-item' + (canAfford ? ' affordable' : ' locked');
-    if(level > 0) div.innerHTML += `<div class="badge">${level}</div>`;
-    div.innerHTML += `
-      <div class="icon">${item.icon}</div>
-      <div class="name">${item.name}</div>
-      <div class="cost">🍔 ${cost}</div>
-      <div class="effect">${item.effect}</div>
-    `;
-    if(canAfford) {
-      div.onclick = () => buyUpgrade(item.id);
-    }
-    grid.appendChild(div);
+function renderShop(){
+  $('shopGrid').innerHTML=shop.map(item=>{
+    const c=cost(item.id),lvl=state.upgrades[item.id]||0,can=state.fat>=c;
+    return `<div class="shop-card ${can&&lvl<99?'affordable':''}${!can?' locked':''}" data-id="${item.id}">
+      ${lvl>0?`<div class="lvl">${lvl}</div>`:''}
+      <div class="icon">${item.i}</div>
+      <div class="name">${item.n}</div>
+      <div class="cost">${c} 🍔</div>
+      <div class="desc">${item.e}</div>
+    </div>`
+  }).join('');
+  document.querySelectorAll('.shop-card').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const id=el.dataset.id,c=cost(id);
+      if(state.fat<c||(state.upgrades[id]||0)>=99)return;
+      state.fat-=c;state.upgrades[id]=(state.upgrades[id]||0)+1;
+      sndBuy();toast('✅ '+shop.find(x=>x.id===id).n+' куплено!');update();renderShop();save();
+    });
   });
 }
 
-function buyUpgrade(id) {
-  const cost = getUpgradeCost(id);
-  if(state.fat < cost) return;
-  state.fat -= cost;
-  state.upgrades[id] = (state.upgrades[id] || 0) + 1;
-  playBuy();
-  showToast('✅ ' + (shopItems.find(i=>i.id===id)?.name || id) + ' куплено!');
-  update();
-  renderShop();
-  save();
+function toast(msg){
+  const box=$('toastBox'),t=document.createElement('div');t.className='toast';t.textContent=msg;
+  box.appendChild(t);setTimeout(()=>{t.style.transition='all 0.3s';t.style.opacity='0';t.style.transform='translateY(-10px)';setTimeout(()=>t.remove(),300)},2000);
 }
 
-// ====== TOAST ======
-function showToast(msg) {
-  const existing = document.querySelector('.toast');
-  if(existing) existing.remove();
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => {
-    t.style.animation = 'slideOut 0.3s ease';
-    setTimeout(() => t.remove(), 300);
-  }, 2000);
-}
-
-// ====== UPDATE UI ======
-function update() {
-  const fatPerSec = getFatPerSec();
-  const fatPerClick = getFatPerClick();
-  const brainDrain = getBrainDrain();
-  const energyDrain = getEnergyDrain();
-  
-  state.brainDrain = brainDrain;
-  state.energyDrain = energyDrain;
-  state.fatPerSec = fatPerSec;
-  state.fatPerClick = fatPerClick;
-  
-  $('fatDisplay').textContent = Math.floor(state.fat);
-  $('brainDisplay').textContent = Math.floor(state.brains);
-  $('energyDisplay').textContent = Math.floor(state.energy);
-  $('fatPerSec').textContent = fatPerSec;
-  $('brainDrain').textContent = brainDrain;
-  $('energyDrain').textContent = energyDrain;
-  
-  $('hungerBar').style.width = state.hunger + '%';
-  $('brainBar').style.width = (state.brains / state.maxBrains * 100) + '%';
-  $('energyBar').style.width = (state.energy / state.maxEnergy * 100) + '%';
-  
-  $('dayNum').textContent = state.day;
-  $('failCount').textContent = state.fails;
-  $('totalFails').textContent = state.fails;
-  $('totalFat').textContent = Math.floor(state.totalFat);
-  $('totalDays').textContent = state.day;
-  
-  // Day progression
-  const newDay = 1 + Math.floor(state.totalFat / 50);
-  if(newDay > state.day) {
-    state.day = newDay;
-    state.maxBrains = 100 + state.day * 10;
-    state.maxEnergy = 100 + state.day * 10;
-    showToast(`🌙 День ${state.day}! Егор стал ещё тупее!`);
-    setFaceState('stupid');
+let updateLock=false;
+function update(){
+  const fp=fps(),fc=fpc(),bd=Math.max(1,1+Math.floor(state.day/3)),ed=Math.max(1,1+Math.floor(state.day/5));
+  $('fatVal').textContent=Math.floor(state.fat);
+  $('brainVal').textContent=Math.floor(state.brains);
+  $('energyVal').textContent=Math.floor(state.energy);
+  $('fps').textContent=fp;$('bpd').textContent=bd;$('epd').textContent=ed;
+  $('fatBar').style.width=state.hunger+'%';
+  $('brainBar').style.width=(state.brains/state.maxBrains*100)+'%';
+  $('energyBar').style.width=(state.energy/state.maxEnergy*100)+'%';
+  $('dayDisplay').textContent=state.day;$('failDisplay').textContent=state.fails;
+  $('failsTotal').textContent=state.fails;$('totalFatVal').textContent=Math.floor(state.totalFat);$('dayTotal').textContent=state.day;
+  const nd=1+Math.floor(state.totalFat/50);
+  if(nd>state.day&&!updateLock){
+    updateLock=true;state.day=nd;state.maxBrains=100+state.day*8;state.maxEnergy=100+state.day*8;
+    const cel=$('celebration');cel.classList.add('show');
+    setTimeout(()=>{cel.classList.remove('show');updateLock=false},1500);
+    toast('🌙 День '+state.day+'! Егор тупеет!');
   }
 }
 
-// ====== PASSIVE LOOP ======
-function gameLoop() {
-  if(!state.eventActive && !state.phoneFreeze) {
-    // Passive fat gen
-    const fps = getFatPerSec();
-    if(fps > 0 && state.brains > 0 && state.energy > 0) {
-      state.fat += fps * 0.1;
-      state.totalFat += fps * 0.1;
-    }
-    
-    // Hunger drain
-    state.hunger = clamp(state.hunger - 0.15, 0, 100);
-    
-    // Brain drain
-    state.brains = clamp(state.brains - getBrainDrain() * 0.05, 0, state.maxBrains);
-    
-    // Energy drain
-    state.energy = clamp(state.energy - getEnergyDrain() * 0.05, 0, state.maxEnergy);
-    
-    // Check brain status
-    if(state.brains <= 0) setFaceState('stupid');
-    else if(state.hunger < 20) setFaceState('angry');
-    
-    // Auto check events
-    checkEvents();
-    
-    update();
-    renderShop();
-    save();
+function loop(){
+  if(!state.eventActive){
+    const f=fps(),bd=Math.max(1,1+Math.floor(state.day/3)),ed=Math.max(1,1+Math.floor(state.day/5));
+    if(f>0&&state.brains>0&&state.energy>0){state.fat+=f*0.1;state.totalFat+=f*0.1}
+    state.hunger=clamp(state.hunger-0.12,0,100);
+    state.brains=clamp(state.brains-bd*0.04,0,state.maxBrains);
+    state.energy=clamp(state.energy-ed*0.04,0,state.maxEnergy);
+    checkEvents();update();renderShop();save();
   }
 }
 
-// ====== RESET ======
-function resetGame() {
-  if(!confirm('Точно сбросить? Всё прогресс пойдет по пизде!')) return;
-  localStorage.removeItem('egorClicker');
-  location.reload();
-}
+function resetGame(){if(confirm('Сбросить весь прогресс?')){localStorage.removeItem('egor2');location.reload()}}
 
-// ====== INIT ======
 load();
-$('egorContainer').addEventListener('click', clickEgor);
-$('btnFeed').addEventListener('click', feed);
-$('btnRest').addEventListener('click', rest);
-$('resetBtn').addEventListener('click', resetGame);
-
-// Close event overlay on click outside
-$('eventOverlay').addEventListener('click', (e) => {
-  if(e.target === $('eventOverlay')) {
-    if(state.eventActive) {
-      state.eventActive = false;
-      $('eventOverlay').classList.remove('show');
-      state.fails++;
-      playFail();
-      showToast('❌ Струсил! Провал!');
-      update();
-      save();
-    }
-  }
+$('egorClick').addEventListener('click',clickEgor);
+$('btnFeed').addEventListener('click',feed);
+$('btnRest').addEventListener('click',rest);
+$('resetBtn').addEventListener('click',resetGame);
+document.addEventListener('keydown',e=>{
+  if(e.key===' '||e.key==='Enter'){e.preventDefault();if(state.eventActive)$('evBtn').click();else clickEgor(e)}
+  if(e.key==='f')feed();if(e.key==='r')rest()
 });
+update();renderShop();setInterval(loop,100);
+toast('🐷 Кликай по Егору! Пробел/F/R');
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if(e.key === ' ' || e.key === 'Enter') {
-    if(state.eventActive) {
-      $('eventBtn').click();
-    } else {
-      clickEgor();
-    }
-    e.preventDefault();
-  }
-  if(e.key === 'f') feed();
-  if(e.key === 'r') rest();
-});
-
-update();
-renderShop();
-setInterval(gameLoop, 100);
-showToast('🐷 Кликай по Егору! Пробел = клик, F = кормить, R = отдых');
-
-console.log('🐷 ЕГОР-КЛИКЕР v1.0');
-console.log('📸 Хочешь добавить фото друга? Замени .emoji-face на <img>');
+console.log('🐷 ЕГОР-КЛИКЕР v2.0 PREMIUM');
 </script>
 </body>
 </html>
