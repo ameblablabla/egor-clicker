@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ЕГОР-КЛИКЕР: Симулятор Днища</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+@keyframes shake{0%,100%{transform:translateX(0)}10%,30%,50%,70%,90%{transform:translateX(-6px)}20%,40%,60%,80%{transform:translateX(6px)}}
+@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-100px) scale(0.5)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes slideIn{0%{transform:translateY(-100%);opacity:0}100%{transform:translateY(0);opacity:1}}
+@keyframes slideOut{0%{transform:translateY(0);opacity:1}100%{transform:translateY(100%);opacity:0}}
+@keyframes rainbow{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes glitch{0%{clip-path:inset(0 0 0 0)}5%{clip-path:inset(20% 0 60% 0)}10%{clip-path:inset(0 0 0 0)}15%{clip-path:inset(50% 0 10% 0)}20%{clip-path:inset(0 0 0 0)}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+@keyframes neon{0%,100%{text-shadow:0 0 7px #fff,0 0 10px #fff,0 0 21px #fff,0 0 42px #0fa,0 0 82px #0fa,0 0 92px #0fa,0 0 102px #0fa,0 0 151px #0fa}50%{text-shadow:0 0 4px #fff,0 0 7px #fff,0 0 18px #fff,0 0 38px #f0f,0 0 73px #f0f,0 0 80px #f0f,0 0 94px #f0f,0 0 140px #f0f}}
+@keyframes bgScroll{0%{background-position:0 0}100%{background-position:100% 100%}}
+
+:root{
+--bg:#0a0a1a;
+--card:#1a1a3e;
+--card2:#2a1a4e;
+--accent:#ff6b35;
+--accent2:#ffd700;
+--accent3:#00ff88;
+--text:#fff;
+--text2:#aaa;
+--danger:#ff3355;
+--success:#00ff88;
+--font:'Segoe UI',system-ui,-apple-system,sans-serif;
+}
+body{
+font-family:var(--font);
+background:var(--bg);
+color:var(--text);
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow-x:hidden;
+background-image:radial-gradient(ellipse at 20% 50%,#1a0a3e 0%,transparent 50%),radial-gradient(ellipse at 80% 50%,#0a1a3e 0%,transparent 50%);
+}
+#app{
+width:100%;
+max-width:420px;
+padding:12px;
+position:relative;
+}
+.header{
+text-align:center;
+padding:10px 0 6px;
+position:relative;
+}
+.header h1{
+font-size:22px;
+font-weight:900;
+background:linear-gradient(90deg,#ff6b35,#ffd700,#ff6b35);
+background-size:200% auto;
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+animation:rainbow 3s linear infinite;
+letter-spacing:1px;
+}
+.header .day{
+font-size:13px;
+color:var(--text2);
+margin-top:2px;
+}
+.header .day span{color:var(--accent2);font-weight:700}
+
+/* EGOR FACE */
+.egor-container{
+position:relative;
+margin:8px auto;
+width:200px;
+height:200px;
+cursor:pointer;
+touch-action:manipulation;
+}
+.egor-face{
+width:100%;
+height:100%;
+border-radius:50%;
+background:radial-gradient(circle at 35% 35%,#f5d0a9,#d4a574 50%,#b8845a);
+position:relative;
+transition:transform 0.1s;
+box-shadow:0 0 40px rgba(255,107,53,0.3),inset 0 -20px 40px rgba(0,0,0,0.2);
+overflow:hidden;
+}
+.egor-face:active{transform:scale(0.92)}
+.egor-face.clicked{animation:pulse 0.15s ease}
+.egor-face img{
+width:100%;height:100%;object-fit:cover;display:block;
+}
+.egor-face .placeholder{
+width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:100px;
+}
+
+/* Eyes */
+.eyes{
+position:absolute;top:28%;left:0;width:100%;height:30%;display:flex;justify-content:space-around;padding:0 30px;
+}
+.eye{
+width:28px;height:32px;background:#fff;border-radius:50%;position:relative;transition:all 0.2s;
+}
+.eye::after{
+content:'';position:absolute;width:14px;height:18px;background:#333;border-radius:50%;top:6px;left:7px;transition:all 0.2s;
+}
+.egor-face.happy .eye::after{top:2px;height:22px}
+.egor-face.angry .eye::after{top:10px;height:10px;background:#cc0000}
+.egor-face.stupid .eye{transform:rotate(10deg)}
+.egor-face.stupid .eye:last-child{transform:rotate(-10deg)}
+.egor-face.stupid .eye::after{width:10px;height:10px;top:12px;left:9px}
+
+.mouth{
+position:absolute;bottom:22%;left:50%;transform:translateX(-50%);
+width:50px;height:16px;border-bottom:4px solid #a06040;border-radius:0 0 25px 25px;transition:all 0.3s;
+}
+.egor-face.happy .mouth{width:60px;height:24px;border-bottom-width:5px}
+.egor-face.angry .mouth{width:40px;height:8px;border-bottom:none;border-top:4px solid #a06040;border-radius:25px 25px 0 0}
+.egor-face.stupid .mouth{width:40px;height:20px;border-bottom:4px solid #a06040;border-radius:50%}
+
+/* Floating particles */
+.particles{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden}
+.particle{
+position:absolute;font-size:20px;pointer-events:none;animation:floatUp 1s ease-out forwards;z-index:10;
+}
+
+/* Stats */
+.stats{
+display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0;
+}
+.stat{
+background:var(--card);border-radius:12px;padding:8px 6px;text-align:center;border:1px solid rgba(255,255,255,0.06);
+}
+.stat .label{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:0.5px}
+.stat .value{font-size:20px;font-weight:800;margin-top:1px}
+.stat .value.fat{color:var(--accent)}
+.stat .value.brain{color:var(--accent3)}
+.stat .value.energy{color:var(--accent2)}
+.stat .sub{font-size:10px;color:var(--text2);margin-top:-1px}
+
+/* Bars */
+.bars{display:flex;flex-direction:column;gap:4px;margin:4px 0 8px}
+.bar-row{display:flex;align-items:center;gap:6px}
+.bar-row .bar-label{font-size:10px;width:45px;color:var(--text2);flex-shrink:0}
+.bar-track{flex:1;height:12px;background:rgba(255,255,255,0.08);border-radius:6px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:6px;transition:width 0.5s ease;position:relative}
+.bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.15);border-radius:6px 6px 0 0}
+.bar-fill.hunger{background:linear-gradient(90deg,var(--accent),#ff9500)}
+.bar-fill.brain{background:linear-gradient(90deg,var(--accent3),#00ddff)}
+.bar-fill.energy{background:linear-gradient(90deg,var(--accent2),#ffaa00)}
+
+/* Buttons */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 0}
+.btn{
+padding:10px;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer;
+transition:all 0.15s;touch-action:manipulation;font-family:var(--font);
+}
+.btn:active{transform:scale(0.95)}
+.btn.feed{background:linear-gradient(135deg,#ff6b35,#ff9500);color:#fff;box-shadow:0 4px 15px rgba(255,107,53,0.3)}
+.btn.feed:hover{box-shadow:0 6px 20px rgba(255,107,53,0.5)}
+.btn.rest{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;box-shadow:0 4px 15px rgba(124,58,237,0.3)}
+.btn.rest:hover{box-shadow:0 6px 20px rgba(124,58,237,0.5)}
+
+/* Shop */
+.shop{margin:8px 0}
+.shop h3{font-size:12px;color:var(--text2);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px}
+.shop-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.shop-item{
+background:var(--card);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:8px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;
+}
+.shop-item:active{transform:scale(0.95)}
+.shop-item .icon{font-size:24px}
+.shop-item .name{font-size:11px;font-weight:600;margin:2px 0}
+.shop-item .cost{font-size:10px;color:var(--accent);font-weight:700}
+.shop-item .effect{font-size:9px;color:var(--text2)}
+.shop-item .level{font-size:9px;color:var(--accent3);font-weight:700}
+.shop-item.affordable{border-color:rgba(0,255,136,0.2);background:linear-gradient(135deg,var(--card),rgba(0,255,136,0.05))}
+.shop-item.affordable:hover{border-color:rgba(0,255,136,0.5);box-shadow:0 0 15px rgba(0,255,136,0.1)}
+.shop-item.locked{opacity:0.4;cursor:not-allowed}
+.shop-item .badge{
+position:absolute;top:-3px;right:-3px;background:var(--accent2);color:#000;
+width:18px;height:18px;border-radius:50%;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;
+}
+
+/* Footer stats */
+.footer{
+display:flex;justify-content:space-between;padding:8px 4px;margin-top:4px;
+background:var(--card);border-radius:12px;border:1px solid rgba(255,255,255,0.06);
+}
+.footer-stat{text-align:center}
+.footer-stat .num{font-size:16px;font-weight:800}
+.footer-stat .num.fails{color:var(--danger)}
+.footer-stat .num.total{color:var(--accent)}
+.footer-stat .num.days{color:var(--accent2)}
+.footer-stat .lbl{font-size:9px;color:var(--text2);text-transform:uppercase}
+
+/* Event Modal */
+.event-overlay{
+position:fixed;top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);
+display:none;align-items:center;justify-content:center;z-index:100;
+}
+.event-overlay.show{display:flex}
+.event-modal{
+background:linear-gradient(135deg,#2a1a4e,#1a1a3e);
+border-radius:20px;padding:24px;max-width:340px;width:90%;text-align:center;
+border:2px solid var(--accent);box-shadow:0 0 40px rgba(255,107,53,0.3);
+animation:slideIn 0.3s ease;
+}
+.event-modal .event-icon{font-size:48px;margin-bottom:8px}
+.event-modal h2{font-size:18px;margin-bottom:4px}
+.event-modal p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.4}
+.event-modal .btn{min-width:120px;padding:10px 20px}
+.event-modal .btn.event-action{background:linear-gradient(135deg,var(--accent),#ff9500);color:#fff;font-size:14px}
+.event-modal .btn.event-action.success{background:linear-gradient(135deg,var(--accent3),#00cc66)}
+.event-modal .btn.event-action.danger{background:linear-gradient(135deg,var(--danger),#cc0033)}
+
+/* Toast */
+.toast{
+position:fixed;top:20px;left:50%;transform:translateX(-50%);
+background:rgba(0,0,0,0.9);backdrop-filter:blur(10px);color:#fff;padding:10px 20px;
+border-radius:12px;font-size:13px;font-weight:600;z-index:200;border:1px solid rgba(255,255,255,0.1);
+animation:slideIn 0.3s ease;pointer-events:none;
+}
+
+/* Reset button */
+.reset-btn{
+position:fixed;bottom:12px;right:12px;width:36px;height:36px;border-radius:50%;
+background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+color:var(--text2);font-size:14px;cursor:pointer;transition:all 0.2s;z-index:50;
+display:flex;align-items:center;justify-content:center;
+}
+.reset-btn:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+/* Responsive */
+@media(max-width:400px){
+#app{padding:8px}
+.egor-container{width:160px;height:160px}
+.header h1{font-size:18px}
+.stat .value{font-size:16px}
+}
+
+/* Egor face states when no photo */
+.egor-face .emoji-face{
+width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:120px;
+transition:all 0.3s;
+}
+.egor-face.happy .emoji-face{animation:bounce 0.5s ease}
+.egor-face.angry .emoji-face{animation:shake 0.5s ease}
+.egor-face.stupid .emoji-face{animation:spin 0.5s ease}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- Header -->
+  <div class="header">
+    <h1>🐷 ЕГОР-КЛИКЕР</h1>
+    <div class="day">День <span id="dayNum">1</span> • Провалов: <span id="failCount">0</span></div>
+  </div>
+
+  <!-- Egor face clickable -->
+  <div class="egor-container" id="egorContainer">
+    <div class="egor-face" id="egorFace">
+      <div class="emoji-face" id="egorEmoji">😎</div>
+      <div class="particles" id="particles"></div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat">
+      <div class="label">🍔 Жир</div>
+      <div class="value fat" id="fatDisplay">0</div>
+      <div class="sub">+<span id="fatPerSec">0</span>/сек</div>
+    </div>
+    <div class="stat">
+      <div class="label">🧠 Мозги</div>
+      <div class="value brain" id="brainDisplay">100</div>
+      <div class="sub">-<span id="brainDrain">1</span>/сек</div>
+    </div>
+    <div class="stat">
+      <div class="label">⚡ Энергия</div>
+      <div class="value energy" id="energyDisplay">100</div>
+      <div class="sub">-<span id="energyDrain">1</span>/сек</div>
+    </div>
+  </div>
+
+  <!-- Bars -->
+  <div class="bars">
+    <div class="bar-row">
+      <div class="bar-label">🍔 Жир</div>
+      <div class="bar-track"><div class="bar-fill hunger" id="hungerBar" style="width:50%"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">🧠 Мозги</div>
+      <div class="bar-track"><div class="bar-fill brain" id="brainBar" style="width:100%"></div></div>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">⚡ Энергия</div>
+      <div class="bar-track"><div class="bar-fill energy" id="energyBar" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn feed" id="btnFeed">🍔 Покормить</button>
+    <button class="btn rest" id="btnRest">💤 Отдохнуть</button>
+  </div>
+
+  <!-- Shop -->
+  <div class="shop">
+    <h3>🏪 Магазин</h3>
+    <div class="shop-grid" id="shopGrid"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-stat"><div class="num fails" id="totalFails">0</div><div class="lbl">💀 Провалы</div></div>
+    <div class="footer-stat"><div class="num total" id="totalFat">0</div><div class="lbl">🍔 Всего жира</div></div>
+    <div class="footer-stat"><div class="num days" id="totalDays">1</div><div class="lbl">📅 Дней</div></div>
+  </div>
+</div>
+
+<!-- Event overlay -->
+<div class="event-overlay" id="eventOverlay">
+  <div class="event-modal" id="eventModal">
+    <div class="event-icon" id="eventIcon">💥</div>
+    <h2 id="eventTitle">ПРИСТУП ТУПОСТИ!</h2>
+    <p id="eventDesc">Егор перестал думать. Жми быстро!</p>
+    <button class="btn event-action" id="eventBtn">🔨 Жми!</button>
+  </div>
+</div>
+
+<!-- Reset -->
+<button class="reset-btn" id="resetBtn">↺</button>
+
+<script>
+// ====== GAME STATE ======
+const state = {
+  fat: 0,
+  brains: 100,
+  maxBrains: 100,
+  energy: 100,
+  maxEnergy: 100,
+  hunger: 50,
+  day: 1,
+  fails: 0,
+  totalFat: 0,
+  fatPerClick: 1,
+  fatPerSec: 0,
+  brainDrain: 1,
+  energyDrain: 1,
+  clickPower: 1,
+  upgrades: {
+    doshik: 0,
+    pelmeni: 0,
+    kreslo: 0,
+    divan: 0,
+    phone: 0,
+    folga: 0,
+  },
+  eventActive: false,
+  phoneFreeze: false,
+  combo: 0,
+  lastClickTime: 0,
+  eventCooldown: 0,
+};
+
+// ====== SHOP DEFINITIONS ======
+const shopItems = [
+  { id:'doshik', icon:'🍜', name:'Дошик', baseCost:15, costMult:1.5, effect:'+1 жир/сек', desc:'Еда бедняка' },
+  { id:'pelmeni', icon:'🥟', name:'Пельмени', baseCost:50, costMult:1.6, effect:'+3 жир/сек', desc:'С соседом по общаге' },
+  { id:'kreslo', icon:'🪑', name:'Кресло', baseCost:30, costMult:1.8, effect:'+1 жир/клик', desc:'Б/у, но норм' },
+  { id:'divan', icon:'🛋️', name:'Диван', baseCost:80, costMult:1.8, effect:'+2 жир/клик', desc:'С пружинами наружу' },
+  { id:'phone', icon:'📱', name:'Телефон', baseCost:60, costMult:2.0, effect:'Меньше скуки', desc:'ТикТок — сила' },
+  { id:'folga', icon:'🤖', name:'Шапка из фольги', baseCost:100, costMult:2.0, effect:'-50% приступов', desc:'Защита от тупости' },
+];
+
+// ====== DOM REFS ======
+const $ = id => document.getElementById(id);
+const egorFace = $('egorFace');
+const egorEmoji = $('egorEmoji');
+const particles = $('particles');
+
+// ====== EVENT MESSAGES ======
+const events = [
+  {
+    icon:'💥', title:'ПРИСТУП ТУПОСТИ!', 
+    desc:'Егор перестал думать. Жми быстро, чтобы он не накосячил!',
+    action:'🧠 ДУМАТЬ!', type:'tap', taps:7, time:4000,
+    success:{title:'Ура! Не накосячил!', desc:'Егор справился... в этот раз.'},
+    fail:{title:'Провал!', desc:'Егор накосячил. Снова.'},
+  },
+  {
+    icon:'📱', title:'ЗАВИС В ТЕЛЕФОНЕ',
+    desc:'Егор залип в ТикТок. Клики бесполезны 3 секунды!',
+    action:'😤 Ждать...', type:'wait', duration:3000,
+    success:{title:'Отлип наконец-то', desc:'Егор: "Ща еще один видос..."'},
+    fail:{title:'Залип ещё сильнее', desc:'Теряешь 10 жира от бессилия.'},
+  },
+  {
+    icon:'🍝', title:'СТРАННАЯ ЕДА',
+    desc:'Егор ест макароны с вареньем. Это даёт +5 жира!',
+    action:'🍴 Наблюдать', type:'bonus', bonus:5,
+    success:{title:'Он доволен', desc:'Егор: "Мам, эт вкусно!"'},
+    fail:{title:'Тебя стошнило', desc:'Теряешь 3 жира.'},
+  },
+  {
+    icon:'⏰', title:'ОПОЗДАЛ!',
+    desc:'Егор проспал. Опять. Шеф звонит!',
+    action:'📞 Оправдываться', type:'tap', taps:4, time:3000,
+    success:{title:'Повезло', desc:'Сказал, что пробки. Шеф поверил.'},
+    fail:{title:'УВОЛЕН!', desc:'Шучу. Но жир -15.'},
+  },
+  {
+    icon:'🤡', title:'ЕГОР РАССКАЗЫВАЕТ АНЕКДОТ',
+    desc:'"Идет медведь по лесу... видит... короче, я забыл."',
+    action:'😂 Смеяться вежливо', type:'tap', taps:3, time:2000,
+    success:{title:'Егор счастлив', desc:'Он думает, что он забавный. +3 жира!'},
+    fail:{title:'Ты не выдержал', desc:'"Это был тот же анекдот в 5-й раз." -2 жира.'},
+  },
+];
+
+// ====== SOUND (Web Audio) ======
+let audioCtx;
+function playTone(freq, duration, type='square', vol=0.08) {
+  try {
+    if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch(e) {}
+}
+function playClick() { playTone(600, 0.08, 'square', 0.06) }
+function playSuccess() { playTone(800, 0.1); setTimeout(()=>playTone(1000,0.1),100) }
+function playFail() { playTone(200, 0.2, 'sawtooth', 0.08) }
+function playBuy() { playTone(500, 0.06); setTimeout(()=>playTone(700,0.06),80) }
+
+// ====== SAVE/LOAD ======
+function save() {
+  try { localStorage.setItem('egorClicker', JSON.stringify(state)) } catch(e) {}
+}
+function load() {
+  try {
+    const d = JSON.parse(localStorage.getItem('egorClicker'));
+    if(d) Object.assign(state, d);
+  } catch(e) {}
+}
+
+// ====== GAME LOGIC ======
+function getUpgradeCost(id) {
+  const item = shopItems.find(i => i.id === id);
+  if(!item) return Infinity;
+  const level = state.upgrades[id] || 0;
+  return Math.floor(item.baseCost * Math.pow(item.costMult, level));
+}
+
+function getFatPerSec() {
+  const d = state.upgrades.doshik * 1;
+  const p = state.upgrades.pelmeni * 3;
+  return d + p;
+}
+
+function getFatPerClick() {
+  const k = state.upgrades.kreslo * 1;
+  const d = state.upgrades.divan * 2;
+  return 1 + k + d;
+}
+
+function getBrainDrain() {
+  return 1 + Math.floor(state.day / 3);
+}
+
+function getEnergyDrain() {
+  return 1 + Math.floor(state.day / 5);
+}
+
+function getEventChance() {
+  const folga = state.upgrades.folga || 0;
+  const reduction = folga * 0.5;
+  return Math.max(0.02, 0.08 - reduction * 0.04);
+}
+
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)) }
+
+function clickEgor() {
+  if(state.eventActive || state.phoneFreeze) return;
+  
+  const now = Date.now();
+  if(now - state.lastClickTime < 300) state.combo++;
+  else state.combo = 1;
+  state.lastClickTime = now;
+  
+  if(state.energy <= 0) {
+    showToast('💀 Егор слишком уставший! Покорми или отдохни!');
+    state.combo = 0;
+    return;
+  }
+  if(state.brains <= 0) {
+    showToast('🧠💥 У Егора нет мозгов! Отдохни, пусть подумает.');
+    state.combo = 0;
+    return;
+  }
+  
+  const comboBonus = Math.min(state.combo, 10) * 0.1;
+  const energyPenalty = state.energy < 20 ? 0.5 : 1;
+  const earned = Math.floor((getFatPerClick() + state.fatPerClick) * (1 + comboBonus) * energyPenalty);
+  
+  state.fat += earned;
+  state.totalFat += earned;
+  state.brains = clamp(state.brains - 1, 0, state.maxBrains);
+  state.energy = clamp(state.energy - 1, 0, state.maxEnergy);
+  
+  playClick();
+  spawnParticle('+' + earned + ' 🍔', '#ff6b35');
+  setFaceState('happy');
+  update();
+  checkEvents();
+  save();
+}
+
+function spawnParticle(text, color) {
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = text;
+  p.style.color = color;
+  p.style.left = (20 + Math.random() * 60) + '%';
+  p.style.top = (10 + Math.random() * 30) + '%';
+  p.style.fontSize = (14 + Math.random() * 10) + 'px';
+  p.style.fontWeight = '800';
+  particles.appendChild(p);
+  setTimeout(() => p.remove(), 1000);
+}
+
+function feed() {
+  if(state.eventActive) return;
+  state.hunger = clamp(state.hunger + 25, 0, 100);
+  state.energy = clamp(state.energy + 15, 0, state.maxEnergy);
+  state.fat += 3;
+  state.totalFat += 3;
+  playSuccess();
+  spawnParticle('🍔 +25 сытость', '#ff9500');
+  showToast('🍔 Егор покушал! "Мам, добавки!"');
+  setFaceState('happy');
+  update();
+  save();
+}
+
+function rest() {
+  if(state.eventActive) return;
+  state.energy = clamp(state.energy + 30, 0, state.maxEnergy);
+  state.brains = clamp(state.brains + 10, 0, state.maxBrains);
+  playSuccess();
+  spawnParticle('💤 +30 энергии', '#a855f7');
+  showToast('💤 Егор поспал. Храп на всю комнату.');
+  setFaceState('stupid');
+  update();
+  save();
+}
+
+function setFaceState(mood) {
+  egorFace.className = 'egor-face';
+  if(mood) egorFace.classList.add(mood);
+  const emojis = {happy:'😄', angry:'😡', stupid:'😵', default:'😎'};
+  egorEmoji.textContent = emojis[mood] || emojis.default;
+}
+
+// ====== EVENTS ======
+let eventTapCount = 0;
+let eventTimer = null;
+
+function checkEvents() {
+  if(state.eventActive) return;
+  if(state.eventCooldown > 0) { state.eventCooldown--; return }
+  if(state.upgrades.folga > 0 && Math.random() < 0.5) return;
+  
+  if(Math.random() < getEventChance()) {
+    const evt = events[Math.floor(Math.random() * events.length)];
+    triggerEvent(evt);
+  }
+}
+
+function triggerEvent(evt) {
+  state.eventActive = true;
+  const overlay = $('eventOverlay');
+  const modal = $('eventModal');
+  $('eventIcon').textContent = evt.icon;
+  $('eventTitle').textContent = evt.title;
+  $('eventDesc').textContent = evt.desc;
+  const btn = $('eventBtn');
+  btn.textContent = evt.action;
+  btn.className = 'btn event-action';
+  
+  overlay.classList.add('show');
+  
+  if(evt.type === 'wait') {
+    btn.onclick = null;
+    btn.style.pointerEvents = 'none';
+    btn.style.opacity = '0.5';
+    setTimeout(() => {
+      btn.style.pointerEvents = 'auto';
+      btn.style.opacity = '1';
+      btn.onclick = () => resolveEvent(true, evt);
+      btn.textContent = '✅ Готово';
+    }, evt.duration);
+  } else if(evt.type === 'bonus') {
+    btn.onclick = () => resolveEvent(true, evt);
+  } else if(evt.type === 'tap') {
+    eventTapCount = 0;
+    const needed = evt.taps;
+    const timeLimit = evt.time;
+    btn.textContent = `${evt.action} (0/${needed})`;
+    btn.onclick = () => {
+      eventTapCount++;
+      btn.textContent = `${evt.action} (${eventTapCount}/${needed})`;
+      btn.style.transform = 'scale(0.93)';
+      setTimeout(() => btn.style.transform = 'scale(1)', 80);
+      playTone(400 + eventTapCount * 50, 0.06);
+      if(eventTapCount >= needed) {
+        resolveEvent(true, evt);
+      }
+    };
+    setTimeout(() => {
+      if(state.eventActive) resolveEvent(false, evt);
+    }, timeLimit);
+  }
+}
+
+function resolveEvent(success, evt) {
+  if(!state.eventActive) return;
+  state.eventActive = false;
+  $('eventOverlay').classList.remove('show');
+  if(eventTimer) { clearTimeout(eventTimer); eventTimer = null }
+  
+  if(success) {
+    showToast('✅ ' + evt.success.title);
+    if(evt.type === 'bonus') {
+      state.fat += evt.bonus;
+      state.totalFat += evt.bonus;
+      spawnParticle('+' + evt.bonus + ' 🍔', '#00ff88');
+    }
+    state.fat += 2;
+    state.totalFat += 2;
+    playSuccess();
+    setFaceState('happy');
+  } else {
+    showToast('❌ ' + evt.fail.title);
+    state.fails++;
+    const penalty = evt.type === 'bonus' ? 3 : (evt.type === 'wait' ? 10 : 5);
+    state.fat = Math.max(0, state.fat - penalty);
+    playFail();
+    setFaceState('angry');
+    document.getElementById('app').style.animation = 'shake 0.4s ease';
+    setTimeout(() => document.getElementById('app').style.animation = '', 400);
+  }
+  state.eventCooldown = 5 + Math.floor(Math.random() * 10);
+  update();
+  save();
+}
+
+// ====== SHOP ======
+function renderShop() {
+  const grid = $('shopGrid');
+  grid.innerHTML = '';
+  shopItems.forEach(item => {
+    const cost = getUpgradeCost(item.id);
+    const level = state.upgrades[item.id] || 0;
+    const canAfford = state.fat >= cost;
+    const div = document.createElement('div');
+    div.className = 'shop-item' + (canAfford ? ' affordable' : ' locked');
+    if(level > 0) div.innerHTML += `<div class="badge">${level}</div>`;
+    div.innerHTML += `
+      <div class="icon">${item.icon}</div>
+      <div class="name">${item.name}</div>
+      <div class="cost">🍔 ${cost}</div>
+      <div class="effect">${item.effect}</div>
+    `;
+    if(canAfford) {
+      div.onclick = () => buyUpgrade(item.id);
+    }
+    grid.appendChild(div);
+  });
+}
+
+function buyUpgrade(id) {
+  const cost = getUpgradeCost(id);
+  if(state.fat < cost) return;
+  state.fat -= cost;
+  state.upgrades[id] = (state.upgrades[id] || 0) + 1;
+  playBuy();
+  showToast('✅ ' + (shopItems.find(i=>i.id===id)?.name || id) + ' куплено!');
+  update();
+  renderShop();
+  save();
+}
+
+// ====== TOAST ======
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if(existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => t.remove(), 300);
+  }, 2000);
+}
+
+// ====== UPDATE UI ======
+function update() {
+  const fatPerSec = getFatPerSec();
+  const fatPerClick = getFatPerClick();
+  const brainDrain = getBrainDrain();
+  const energyDrain = getEnergyDrain();
+  
+  state.brainDrain = brainDrain;
+  state.energyDrain = energyDrain;
+  state.fatPerSec = fatPerSec;
+  state.fatPerClick = fatPerClick;
+  
+  $('fatDisplay').textContent = Math.floor(state.fat);
+  $('brainDisplay').textContent = Math.floor(state.brains);
+  $('energyDisplay').textContent = Math.floor(state.energy);
+  $('fatPerSec').textContent = fatPerSec;
+  $('brainDrain').textContent = brainDrain;
+  $('energyDrain').textContent = energyDrain;
+  
+  $('hungerBar').style.width = state.hunger + '%';
+  $('brainBar').style.width = (state.brains / state.maxBrains * 100) + '%';
+  $('energyBar').style.width = (state.energy / state.maxEnergy * 100) + '%';
+  
+  $('dayNum').textContent = state.day;
+  $('failCount').textContent = state.fails;
+  $('totalFails').textContent = state.fails;
+  $('totalFat').textContent = Math.floor(state.totalFat);
+  $('totalDays').textContent = state.day;
+  
+  // Day progression
+  const newDay = 1 + Math.floor(state.totalFat / 50);
+  if(newDay > state.day) {
+    state.day = newDay;
+    state.maxBrains = 100 + state.day * 10;
+    state.maxEnergy = 100 + state.day * 10;
+    showToast(`🌙 День ${state.day}! Егор стал ещё тупее!`);
+    setFaceState('stupid');
+  }
+}
+
+// ====== PASSIVE LOOP ======
+function gameLoop() {
+  if(!state.eventActive && !state.phoneFreeze) {
+    // Passive fat gen
+    const fps = getFatPerSec();
+    if(fps > 0 && state.brains > 0 && state.energy > 0) {
+      state.fat += fps * 0.1;
+      state.totalFat += fps * 0.1;
+    }
+    
+    // Hunger drain
+    state.hunger = clamp(state.hunger - 0.15, 0, 100);
+    
+    // Brain drain
+    state.brains = clamp(state.brains - getBrainDrain() * 0.05, 0, state.maxBrains);
+    
+    // Energy drain
+    state.energy = clamp(state.energy - getEnergyDrain() * 0.05, 0, state.maxEnergy);
+    
+    // Check brain status
+    if(state.brains <= 0) setFaceState('stupid');
+    else if(state.hunger < 20) setFaceState('angry');
+    
+    // Auto check events
+    checkEvents();
+    
+    update();
+    renderShop();
+    save();
+  }
+}
+
+// ====== RESET ======
+function resetGame() {
+  if(!confirm('Точно сбросить? Всё прогресс пойдет по пизде!')) return;
+  localStorage.removeItem('egorClicker');
+  location.reload();
+}
+
+// ====== INIT ======
+load();
+$('egorContainer').addEventListener('click', clickEgor);
+$('btnFeed').addEventListener('click', feed);
+$('btnRest').addEventListener('click', rest);
+$('resetBtn').addEventListener('click', resetGame);
+
+// Close event overlay on click outside
+$('eventOverlay').addEventListener('click', (e) => {
+  if(e.target === $('eventOverlay')) {
+    if(state.eventActive) {
+      state.eventActive = false;
+      $('eventOverlay').classList.remove('show');
+      state.fails++;
+      playFail();
+      showToast('❌ Струсил! Провал!');
+      update();
+      save();
+    }
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if(e.key === ' ' || e.key === 'Enter') {
+    if(state.eventActive) {
+      $('eventBtn').click();
+    } else {
+      clickEgor();
+    }
+    e.preventDefault();
+  }
+  if(e.key === 'f') feed();
+  if(e.key === 'r') rest();
+});
+
+update();
+renderShop();
+setInterval(gameLoop, 100);
+showToast('🐷 Кликай по Егору! Пробел = клик, F = кормить, R = отдых');
+
+console.log('🐷 ЕГОР-КЛИКЕР v1.0');
+console.log('📸 Хочешь добавить фото друга? Замени .emoji-face на <img>');
+</script>
+</body>
+</html>
